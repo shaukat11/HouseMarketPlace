@@ -27,5 +27,4 @@ function CreateListing() {
 
   return <div>Gobar bhai</div>;
 }
-
 export default CreateListing;
