@@ -390,6 +390,7 @@ button {
 .exploreCategoryName {
   font-weight: 500;
   text-align: left;
+  margin-top: 10px;
 }
 
 .category {
@@ -417,6 +418,7 @@ button {
   height: 100px;
   border-radius: 1.5rem;
   object-fit: cover;
+  /* object-position: 0px -150px; */
 }
 @media (min-width: 1024px) {
   .categoryListingImg {

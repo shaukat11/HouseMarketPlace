@@ -14,6 +14,7 @@ import {
 import { db } from "../Firebase.config";
 import { toast } from "react-toastify";
 import Spinner from "../Components/Spinner";
+import ListingItems from "./ListingItems";
 
 function Category() {
   const [listing, setlisting] = useState(null);
@@ -32,7 +33,7 @@ function Category() {
         const q = query(
           listingRef,
           where("type", "==", params.categoryName),
-          orderBy("timestamp", "desc"),
+          orderBy("timespan", "desc"),
           limit(10)
         );
 
@@ -42,21 +43,46 @@ function Category() {
         let listing = [];
 
         querySnap.forEach((doc) => {
-          console.log(doc);
-          console.log("why man");
+          return listing.push({
+            id: doc.id,
+            data: doc.data(),
+          });
         });
+
+        setlisting(listing);
+        setloading(false);
       } catch (error) {
-        console.log(error);
+        toast.error("Could not get the listing");
       }
     };
 
     fetchListing();
-  });
+    console.log();
+  }, [params.categoryName]);
 
   return (
-    <div>
-      <h2>Categroy he ya par bhai</h2>
-      <h3>Not able to get any data yet</h3>
+    <div className="category">
+      <header>
+        <p className="pageHeader">
+          {params.categoryName === "rent" ? "Place to rent" : "place to sale"}
+        </p>
+      </header>
+
+      {loading ? (
+        <Spinner />
+      ) : listing && listing.length > 0 ? (
+        <>
+          <main>
+            <ul className="categoryListings">
+              {listing.map((list) => (
+                <ListingItems list={list.data} id={list.id} key={list.id} />
+              ))}
+            </ul>
+          </main>
+        </>
+      ) : (
+        <p>No listing for {params.categoryName}</p>
+      )}
     </div>
   );
 }
