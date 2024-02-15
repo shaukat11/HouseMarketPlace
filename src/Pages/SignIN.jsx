@@ -90,9 +90,11 @@ function SignIN() {
 
           <OAuth />
 
-          <Link to="/sign-up" className="registerLink">
-            Sign Up
-          </Link>
+          <div className="signUpBar">
+            <Link to="/sign-up" className="registerLink">
+              Sign Up
+            </Link>
+          </div>
         </main>
       </div>
     </>

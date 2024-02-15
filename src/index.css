@@ -92,6 +92,7 @@ button {
 .category,
 .explore {
   margin: 1rem;
+  height: auto;
 }
 @media (min-width: 1024px) {
   .pageContainer,

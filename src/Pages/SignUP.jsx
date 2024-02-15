@@ -116,9 +116,11 @@ function SignUP() {
 
           <OAuth />
 
-          <Link to="/sign-in" className="registerLink">
-            Sign In Instead
-          </Link>
+          <div className="signInBar">
+            <Link to="/sign-in" className="registerLink">
+              Sign In Instead
+            </Link>
+          </div>
         </main>
       </div>
     </>

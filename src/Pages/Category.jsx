@@ -19,6 +19,7 @@ import ListingItems from "./ListingItems";
 function Category() {
   const [listing, setlisting] = useState(null);
   const [loading, setloading] = useState(true);
+  const [lastFetchedListing, setLastFetchedListing] = useState(null);
 
   const params = useParams();
 
@@ -39,6 +40,8 @@ function Category() {
 
         // Execute Query
         const querySnap = await getDocs(q);
+        const lastVisible = querySnap.docs[querySnap.docs.length - 1];
+        setLastFetchedListing(lastVisible);
 
         let listing = [];
 
@@ -52,13 +55,53 @@ function Category() {
         setlisting(listing);
         setloading(false);
       } catch (error) {
+        console.log(error);
         toast.error("Could not get the listing");
+        setloading(false);
       }
     };
 
     fetchListing();
-    console.log();
   }, [params.categoryName]);
+
+  // Creating fetch function for loading batch data
+  const FetchMoreListing = async () => {
+    try {
+      // Get reference
+      const listingRef = collection(db, "listings");
+
+      // Create query
+      const q = query(
+        listingRef,
+        where("type", "==", params.categoryName),
+        orderBy("timespan", "desc"),
+        startAfter(lastFetchedListing),
+        limit(10)
+      );
+
+      // Execute Query
+      const querySnap = await getDocs(q);
+      const lastVisible = querySnap.docs[querySnap.docs.length - 1];
+      setLastFetchedListing(lastVisible);
+
+      let listing = [];
+
+      querySnap.forEach((doc) => {
+        return listing.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+
+      // adding more listing to the previous listing using preState
+      setlisting((preState) => [...preState, ...listing]);
+      setloading(false);
+    } catch (error) {
+      console.log(error);
+      toast.error("Could not get the listing");
+      setloading(false);
+    }
+  };
 
   return (
     <div className="category">
@@ -79,6 +122,16 @@ function Category() {
               ))}
             </ul>
           </main>
+
+          <br />
+
+          {lastFetchedListing ? (
+            <p className="loadMore" onClick={FetchMoreListing}>
+              Load More
+            </p>
+          ) : (
+            <p style={{ textAlign: "center" }}>No More Listing</p>
+          )}
         </>
       ) : (
         <p>No listing for {params.categoryName}</p>
