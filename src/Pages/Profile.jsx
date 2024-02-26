@@ -63,7 +63,6 @@ function Profile() {
 
     fetchUserListings();
   }, [auth.currentUser.uid]);
-  console.log(listing);
 
   const onlogout = () => {
     auth.signOut();

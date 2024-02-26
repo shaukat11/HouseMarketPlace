@@ -55,7 +55,6 @@ function Category() {
         setlisting(listing);
         setloading(false);
       } catch (error) {
-        console.log(error);
         toast.error("Could not get the listing");
         setloading(false);
       }
@@ -97,7 +96,6 @@ function Category() {
       setlisting((preState) => [...preState, ...listing]);
       setloading(false);
     } catch (error) {
-      console.log(error);
       toast.error("Could not get the listing");
       setloading(false);
     }

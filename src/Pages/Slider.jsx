@@ -41,7 +41,6 @@ function Slider() {
 
     getListings();
   }, []);
-  console.log(listing);
 
   if (loading) {
     return <Spinner />;
