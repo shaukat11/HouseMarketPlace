@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/swiper-bundle.css";
 import "swiper/css";
 import { getDoc, doc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -11,7 +9,8 @@ import { db } from "../Firebase.config";
 import Spinner from "../Components/Spinner";
 import shareIcon from "../assets/svg/shareIcon.svg";
 import { list } from "firebase/storage";
-// SwiperCore.use([Navigation, Pagination, Scrollbar, A11y]);
+import { Pagination } from "swiper/modules";
+import "swiper/css/pagination"; 
 
 function Listing() {
   const [listing, setListing] = useState(null);
@@ -43,16 +42,25 @@ function Listing() {
   return (
     <main>
       {/* Image Slider Main */}
-      <Swiper slidesPerView={1} pagination={{ clickable: true }}>
-        {listing.imageUrls.map((url, index) => (
-          <SwiperSlide key={index}>
+
+      <Swiper
+        slidesPerView={1}
+        modules={[Pagination]}
+        pagination={{ clickable: true }}
+      >
+        {listing.imageUrls.map((data, id) => (
+          <SwiperSlide key={id}>
             <div
               style={{
-                background: `url(${listing.imageUrls[index]}) center no-repeat`,
+                backgroundImage: `Url(${data})`,
                 backgroundSize: "cover",
+                backgroundPosition: "center",
+                width: "100%",
+                height: "400px",
               }}
-              className="swiperSlideDiv"
-            ></div>
+            >
+              {/* <img src={data} alt="Location Images" style={{width: '100%', height: "400px"}}/> */}
+            </div>
           </SwiperSlide>
         ))}
       </Swiper>

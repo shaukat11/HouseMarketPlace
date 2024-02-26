@@ -6,16 +6,17 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../Firebase.config";
 import { v4 as uuidv4 } from "uuid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Spinner from "../Components/Spinner";
 import { toast } from "react-toastify";
 
-function CreateListing() {
+function EditListing() {
   const [geolocationEnabled, setGeolocationEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [Listing, setListing] = useState(false);
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -52,7 +53,36 @@ function CreateListing() {
   const auth = getAuth();
   const navigate = useNavigate();
   const isMounted = useRef(true);
+  const params = useParams();
 
+  useEffect(() => {
+    setLoading(true);
+    const getListing = async () => {
+      const docRef = doc(db, "listings", params.listingId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        setListing(docSnap.data());
+        setFormData({ ...docSnap.data(), address: docSnap.data().location });
+        setLoading(false);
+      } else {
+        navigate("/");
+        toast.error("Listing Does not exist");
+      }
+    };
+
+    getListing();
+  }, [params.listingId, navigate]);
+
+  // Redirect if listig is not user's
+  useEffect(() => {
+    if (Listing && Listing.userRef !== auth.currentUser.uid) {
+      toast.error("You cannot edit that listing");
+      navigate("/sign-in");
+    }
+  },[]);
+
+  // setUserRef to current user
   useEffect(() => {
     if (isMounted) {
       onAuthStateChanged(auth, (user) => {
@@ -144,7 +174,6 @@ function CreateListing() {
       });
     };
 
-
     const imageUrls = await Promise.all(
       [...images].map((image) => storageImage(image))
     ).catch(() => {
@@ -188,13 +217,13 @@ function CreateListing() {
     location && (formDataCopy.location = location);
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
 
-    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+    // updating Listing
+    const docRef = doc(db, "listing", params.listingId);
+    await updateDoc(docRef, formDataCopy);
     setLoading(false);
     toast.success("Listing Uploaded Successfully");
-    navigate(`/category/${formData.type}/${docRef.id}`);
+    navigate(`category/${formDataCopy.type}/${docRef.id}`);
   };
-
-  //http://localhost:3000/create-listing/category/rent/2FPqhzhY35bo0pa1klrs
 
   const onMutate = (e) => {
     let boolean = null;
@@ -226,7 +255,7 @@ function CreateListing() {
   return (
     <div className="profile">
       <header>
-        <p className="pageHeader">Create a Listing</p>
+        <p className="pageHeader">Edit Listing</p>
       </header>
 
       <main>
@@ -461,12 +490,12 @@ function CreateListing() {
             required
           />
 
-          <button type="submit" className="primaryButton createListingButton" >
-            Create Listing
+          <button type="submit" className="primaryButton createListingButton">
+            Edit Listing
           </button>
         </form>
       </main>
     </div>
   );
 }
-export default CreateListing;
+export default EditListing;

@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../Firebase.config";
-import SwiperCore, { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/swiper-bundle.css";
+import "swiper/css";
 import { toast } from "react-toastify";
 import Spinner from "../Components/Spinner";
+import { Pagination } from "swiper/modules";
+import "swiper/css/pagination";
 
 function Slider() {
   const [loading, SetLoading] = useState(true);
@@ -26,7 +27,7 @@ function Slider() {
         querySnap.forEach((doc) => {
           return listings.push({
             id: doc.id,
-            data: doc.data(),
+            dataa: doc.data(),
           });
         });
 
@@ -49,23 +50,31 @@ function Slider() {
     listing && (
       <>
         <p className="exploreHeading">Recommended</p>
-        <Swiper slidesPerView={1} pagination={{ clickable: true }}>
-          {listing.map((data, id) => (
+
+        <Swiper
+          slidesPerView={1}
+            modules={[Pagination]}
+            pagination={{ clickable: true }}
+        >
+          {listing.map(({ dataa, id }) => (
             <SwiperSlide
               key={id}
-              onClick={() => navigate(`/category/${data.type}/${id}`)}
+              onClick={() => navigate(`/category/${dataa.type}/${id}`)}
             >
               <div
                 style={{
-                  background: `url(${data.imageUrls}) center no repeat`,
+                  backgroundImage: `Url(${dataa.imageUrls[0]})`,
                   backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  width: "100%",
+                  height: "400px",
                 }}
                 className="swiperSlideDiv"
               >
-                <p className="swiperSlideText">{data.name}</p>
+                <p className="swiperSlideText">{dataa.name}</p>
                 <p className="swiperSlidePrice">
-                  ${data.discountedPrice ?? data.regularPrice}{" "}
-                  {data.type === "rent" && "/ Month"}
+                  ${dataa.discountedPrice ?? dataa.regularPrice}{" "}
+                  {dataa.type === "rent" && "/ Month"}
                 </p>
               </div>
             </SwiperSlide>
