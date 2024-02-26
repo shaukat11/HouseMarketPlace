@@ -10,7 +10,7 @@ import Spinner from "../Components/Spinner";
 import shareIcon from "../assets/svg/shareIcon.svg";
 import { list } from "firebase/storage";
 import { Pagination } from "swiper/modules";
-import "swiper/css/pagination"; 
+import "swiper/css/pagination";
 
 function Listing() {
   const [listing, setListing] = useState(null);
@@ -121,17 +121,24 @@ function Listing() {
         <p className="listingLocationTitle">Location</p>
 
         {/* Map Section */}
+
         <div className="leafletContainer">
           <MapContainer
             style={{ height: "100%", width: "100%" }}
+            center={[listing.geolocation.lat, listing.geolocation.lng]}
             zoom={13}
             scrollWheelZoom={false}
           >
             <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
             />
-            <popup>{listing.location}</popup>
+
+            <Marker
+              position={[listing.geolocation.lat, listing.geolocation.lng]}
+            >
+              <Popup>{listing.location}</Popup>
+            </Marker>
           </MapContainer>
         </div>
 

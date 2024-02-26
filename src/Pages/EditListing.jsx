@@ -80,7 +80,7 @@ function EditListing() {
       toast.error("You cannot edit that listing");
       navigate("/sign-in");
     }
-  },[]);
+  }, []);
 
   // setUserRef to current user
   useEffect(() => {
@@ -218,11 +218,15 @@ function EditListing() {
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
 
     // updating Listing
-    const docRef = doc(db, "listing", params.listingId);
-    await updateDoc(docRef, formDataCopy);
-    setLoading(false);
-    toast.success("Listing Uploaded Successfully");
-    navigate(`category/${formDataCopy.type}/${docRef.id}`);
+    try {
+      const docRef = doc(db, "listing", params.listingId);
+      await updateDoc(docRef, formDataCopy);
+      setLoading(false);
+      toast.success("Listing Updated Successfully");
+      navigate(`category/${formDataCopy.type}/${docRef.id}`);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onMutate = (e) => {
@@ -467,8 +471,8 @@ function EditListing() {
                 type="number"
                 id="discountedPrice"
                 value={discountedPrice}
-                onChange={onMutate}
-                min="50"
+                onChange={onMutate} 
+                min="55"
                 max="750000000"
                 required={offer}
               />
